@@ -35,16 +35,16 @@ public class ErrorWrappingMiddleware
         {
             var apiBaseResponse = new ApiErrorResponse
                 (ex.StatusCode, ex.StackTrace, ex.GetType().ToString(), ex.TargetSite.ToString(),
-                    ex.PublicObject.ToString(), ex.InternalCode);
+                    ex.Request.ToString(), ex.InternalCode);
 
             if (hostEnvironment.IsDevelopment())
             {
-                errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.AllProperties, jsonFormatOptions);
             }
             else
             {
                 // hacer algo con allProperties... guardar en el log... etc
-                errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.PublicProperties, jsonFormatOptions);
             }
 
             //context.Response.StatusCode = apiBaseResponse.StatusCode;
@@ -52,18 +52,18 @@ public class ErrorWrappingMiddleware
         catch (Exception ex)
         {
             //_logger.LogError(context.TraceIdentifier, ex, ex.Message);
-            var apiBaseResponse = new ApiErrorResponse
-                (500, ex.StackTrace, ex.GetType().ToString(), ex.TargetSite.ToString(), originalErrorMessage: ex.Message);
+            //var apiBaseResponse = new ApiErrorResponse
+            //    (500, ex.StackTrace, ex.GetType().ToString(), ex.TargetSite.ToString(), originalErrorMessage: ex.Message);
 
-            if (!hostEnvironment.IsDevelopment())
-            {
-                errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
-            }
-            else
-            {
-                // hacer algo con allProperties... guardar en el log... etc
-                errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
-            }
+            //if (!hostEnvironment.IsDevelopment())
+            //{
+            //    errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
+            //}
+            //else
+            //{
+            //    // hacer algo con allProperties... guardar en el log... etc
+            //    errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
+            //}
 
             //context.Response.StatusCode = apiBaseResponse.StatusCode;
         }

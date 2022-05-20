@@ -35,7 +35,9 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpPost]
         public CandidateResponse Post(CandidateRequest request)
         {
-            throw new HttpResponseException(StatusCodes.Status404NotFound, "E002", "Candidato inválido.");
+            throw new
+                HttpResponseException(StatusCodes.Status404NotFound, "E002",
+                    "Candidato inválido", request);
             var candidate = new Candidate
             {
                 Address = request.Address,

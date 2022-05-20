@@ -14,70 +14,48 @@ public class ApiErrorResponse
     public string InternalCode { get; }
     public string OriginalErrorMessage { get; }
     public string TargetSite { get; }
-    public Dictionary<string, string> allProperties { get; }
-    public Dictionary<string, string> publicProperties { get; }
-    public Exception Error { get; }
+    public object Request { get; }
+    public ErrorModel AllProperties { get; set; }
+    public ErrorModel PublicProperties { get; set; }
 
-    public ApiErrorResponse(int statusCode, string stackTrace, string type, string targetSite, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null)
+    public ApiErrorResponse(int statusCode, string stackTrace, string type, string targetSite, object? request = null, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null)
     {
-        allProperties = new Dictionary<string, string>();
+        AllProperties = new ErrorModel();
         StackTrace = stackTrace;
         Type = type;
         TargetSite = targetSite;
         PublicMessage = publicMessage;
         InternalCode = internalCode;
+        Request = request;
         OriginalErrorMessage = originalErrorMessage;
         if (internalCode != null)
         {
-            allProperties.TryAdd("InternalCode", internalCode);
+            AllProperties.InternalCode = internalCode;
         }
 
         if (publicMessage != null)
         {
-            allProperties.TryAdd("PublicMessage", publicMessage);
+            AllProperties.PublicMessage = publicMessage;
         }
 
         if (originalErrorMessage != null)
         {
-            allProperties.TryAdd("OriginalErrorMessage", originalErrorMessage);
+            AllProperties.OriginalErrorMessage = originalErrorMessage;
         }
-        //allProperties.TryAdd("StatusCode", statusCode.ToString());
-        //allProperties.TryAdd("Message", base.Message);
-        allProperties.TryAdd("TargetSite", targetSite);
 
-        allProperties.TryAdd("Type", type);
-        allProperties.TryAdd("StackTrace", stackTrace);
-
-        publicProperties = allProperties.CloneDictionaryCloningValues();
-        var confidentialKeywords = new List<string> { "StackTrace", "Type", "OriginalErrorMessage", "TargetSite" };
-        publicProperties.RemoveKeywords(confidentialKeywords);
-
-        InjectToErrorDic(allProperties);
-    }
-
-    private string GenerateUsefulJsonField(string stackTrace, string initialMessage)
-    {
-        const string patternMatchLine = @"line\s\d*";
-        var regexMatchLine = new Regex(patternMatchLine, RegexOptions.IgnoreCase);
-        var lineError = regexMatchLine.Match(stackTrace).ToString();
-
-        const string patternMatchController = @"\S*\d*\S*\d*.cs";
-        var regexMatchController = new Regex(patternMatchController, RegexOptions.IgnoreCase);
-        var controllerError = regexMatchController.Match(stackTrace).ToString();
-        if (lineError == "" && controllerError == "")
+        if (request != null)
         {
-            return "";
+            AllProperties.Request = request;
         }
-        return initialMessage + " " + lineError + " inside " + controllerError;
-    }
+        AllProperties.TargetSite = targetSite;
 
-    private void InjectToErrorDic(Dictionary<string, string> dicToAlter)
-    {
-        if (!dicToAlter.ContainsKey("StackTrace")) return;
-        var useful = GenerateUsefulJsonField(dicToAlter["StackTrace"], "Error on");
-        if (useful != "")
+        AllProperties.Type = type;
+        AllProperties.StackTrace = stackTrace;
+
+        PublicProperties = new ErrorModel()
         {
-            dicToAlter.TryAdd("Line", useful);
-        }
+            InternalCode = AllProperties.InternalCode,
+            PublicMessage = AllProperties.PublicMessage
+        };
     }
 }

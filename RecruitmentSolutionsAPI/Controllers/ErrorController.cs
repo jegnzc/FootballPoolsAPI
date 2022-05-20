@@ -14,9 +14,8 @@ public class ErrorController : ControllerBase
     public IActionResult HandleErrorDevelopment(
         [FromServices] IHostEnvironment hostEnvironment)
     {
-        var jsonFormatOptions = new JsonSerializerOptions { WriteIndented = true };
-        var errorResponse = string.Empty;
-
+        int? statusCode;
+        ApiErrorResponse apiBaseResponse = null;
         if (!hostEnvironment.IsDevelopment())
         {
             return NotFound();
@@ -26,27 +25,25 @@ public class ErrorController : ControllerBase
         // entonces nosotros fuimos los que generamos el error...
         if (exceptionHandlerFeature.Error is HttpResponseException expectedException)
         {
-            var apiBaseResponse = new ApiErrorResponse
+            apiBaseResponse = new ApiErrorResponse
             (expectedException.StatusCode, expectedException.StackTrace, expectedException.GetType().ToString(),
-                expectedException.TargetSite.ToString(),
-                expectedException.ToString(), expectedException.InternalCode);
+                expectedException.TargetSite.ToString(), expectedException.Request,
+                expectedException.PublicMessage, expectedException.InternalCode, expectedException.Message);
 
-            //errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
-            errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
-
-            return new ObjectResult(errorResponse)
-            {
-                StatusCode = expectedException.StatusCode
-            };
+            statusCode = expectedException.StatusCode;
         }
         // error inesperado...
         else
         {
+            apiBaseResponse = new ApiErrorResponse
+                (500, exceptionHandlerFeature.Error.StackTrace, exceptionHandlerFeature.Error.GetType().ToString(), exceptionHandlerFeature.Error.TargetSite.ToString(), originalErrorMessage: exceptionHandlerFeature.Error.Message);
+            statusCode = 500;
         }
 
-        return Problem(
-            detail: exceptionHandlerFeature.Error.StackTrace,
-            title: exceptionHandlerFeature.Error.Message);
+        return new ObjectResult(apiBaseResponse.AllProperties)
+        {
+            StatusCode = statusCode
+        };
     }
 
     [Route("/error")]

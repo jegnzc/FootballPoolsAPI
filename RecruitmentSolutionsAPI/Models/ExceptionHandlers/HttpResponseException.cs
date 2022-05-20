@@ -4,11 +4,14 @@ public class HttpResponseException : Exception
 {
     public int StatusCode { get; }
     public string InternalCode { get; }
-    public object? PublicObject { get; }
+    public string PublicMessage { get; }
+    public object? Request { get; }
 
-    public HttpResponseException(int statusCode, string internalCode = null, object? publicObject = null)
+    public HttpResponseException(int statusCode, string internalCode, string publicMessage, object? publicObject = null)
     {
         InternalCode = internalCode;
-        (StatusCode, PublicObject) = (statusCode, publicObject);
+        PublicMessage = publicMessage;
+        Request = publicObject;
+        StatusCode = statusCode;
     }
 }
