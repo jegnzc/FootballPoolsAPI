@@ -19,18 +19,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();
+app.UseHttpsRedirection();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseExceptionHandler("/error-development");
 }
-app.UseHttpsRedirection();
+else
+{
+    app.UseExceptionHandler("/error");
+}
 
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseMyMiddleware();
+//app.UseMyMiddleware();
 
 app.Run();

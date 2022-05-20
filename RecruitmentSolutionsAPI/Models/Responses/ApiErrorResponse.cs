@@ -1,11 +1,12 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentSolutionsAPI.Extensions;
 
 namespace RecruitmentSolutionsAPI.Models.Responses;
 
-public class ApiErrorResponse : ApiResponse
+public class ApiErrorResponse
 {
     public string Type { get; }
     public string StackTrace { get; }
@@ -15,8 +16,9 @@ public class ApiErrorResponse : ApiResponse
     public string TargetSite { get; }
     public Dictionary<string, string> allProperties { get; }
     public Dictionary<string, string> publicProperties { get; }
+    public Exception Error { get; }
 
-    public ApiErrorResponse(int statusCode, string stackTrace, string type, string targetSite, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null) : base(statusCode)
+    public ApiErrorResponse(int statusCode, string stackTrace, string type, string targetSite, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null)
     {
         allProperties = new Dictionary<string, string>();
         StackTrace = stackTrace;

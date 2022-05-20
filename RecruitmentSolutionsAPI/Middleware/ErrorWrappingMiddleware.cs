@@ -47,7 +47,7 @@ public class ErrorWrappingMiddleware
                 errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
             }
 
-            context.Response.StatusCode = apiBaseResponse.StatusCode;
+            //context.Response.StatusCode = apiBaseResponse.StatusCode;
         }
         catch (Exception ex)
         {
@@ -65,7 +65,7 @@ public class ErrorWrappingMiddleware
                 errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
             }
 
-            context.Response.StatusCode = apiBaseResponse.StatusCode;
+            //context.Response.StatusCode = apiBaseResponse.StatusCode;
         }
 
         if (!context.Response.HasStarted)

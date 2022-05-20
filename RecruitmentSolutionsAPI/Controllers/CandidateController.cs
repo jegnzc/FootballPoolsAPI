@@ -52,6 +52,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet]
         public IEnumerable<CandidateResponse> Get()
         {
+            throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
             var candidates = unitOfWork.Candidate.GetAll();
 
             return candidates.Select(candidate => new CandidateResponse
@@ -69,10 +70,10 @@ namespace RecruitmentSolutionsAPI.Controllers
         public ApiResponse GetById(int id)
         {
             var candidate = unitOfWork.Candidate.GetById(id);
-            if (candidate == null)
-            {
-                throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
-            }
+            //if (candidate == null)
+            //{
+            //    throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
+            //}
             var response = new CandidateResponse
             {
                 Address = candidate.Address,
@@ -83,28 +84,5 @@ namespace RecruitmentSolutionsAPI.Controllers
             };
             return new ApiOkResponse(response);
         }
-
-        [Route("/error-development")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult HandleErrorDevelopment(
-            [FromServices] IHostEnvironment hostEnvironment)
-        {
-            if (!hostEnvironment.IsDevelopment())
-            {
-                return NotFound();
-            }
-
-            var exceptionHandlerFeature =
-                HttpContext.Features.Get<IExceptionHandlerFeature>()!;
-
-            return Problem(
-                detail: exceptionHandlerFeature.Error.StackTrace,
-                title: exceptionHandlerFeature.Error.Message);
-        }
-
-        [Route("/error")]
-        [ApiExplorerSettings(IgnoreApi = true)]
-        public IActionResult HandleError() =>
-            Problem();
     }
 }
