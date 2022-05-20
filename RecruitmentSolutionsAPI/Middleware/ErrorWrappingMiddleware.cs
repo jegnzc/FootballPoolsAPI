@@ -2,11 +2,9 @@
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using RecruitmentSolutionsAPI.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models;
 
-namespace RecruitmentSolutionsAPI.Filters;
+namespace RecruitmentSolutionsAPI.Middleware;
 
 public class ErrorWrappingMiddleware
 {

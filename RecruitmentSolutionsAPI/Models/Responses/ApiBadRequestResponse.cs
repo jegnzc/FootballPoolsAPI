@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace RecruitmentSolutionsAPI.Models;
+namespace RecruitmentSolutionsAPI.Models.Responses;
 
 public class ApiBadRequestResponse : ApiResponse
 {

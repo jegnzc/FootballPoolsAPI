@@ -1,4 +1,4 @@
-﻿namespace RecruitmentSolutionsAPI.Models;
+﻿namespace RecruitmentSolutionsAPI.Models.Responses;
 
 public class ApiOkResponse : ApiResponse
 {

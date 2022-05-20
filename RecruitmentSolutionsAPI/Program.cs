@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Filters;
 using RecruitmentSolutionsAPI.Interfaces;
 using RecruitmentSolutionsAPI.Repositories;
 using RecruitmentSolutionsAPI.Middleware;
@@ -16,10 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // Add services to the container.
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<HttpResponseExceptionFilter>();
-});
+builder.Services.AddControllers();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.SuppressModelStateInvalidFilter = true;

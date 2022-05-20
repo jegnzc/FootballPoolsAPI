@@ -1,8 +1,6 @@
-﻿using RecruitmentSolutionsAPI.Filters;
+﻿namespace RecruitmentSolutionsAPI.Middleware;
 
-namespace RecruitmentSolutionsAPI.Middleware;
-
-public static class MyMiddlewareExtensions
+public static class ErrorWrapperMiddleware
 {
     public static IApplicationBuilder UseMyMiddleware(this IApplicationBuilder builder)
     {
