@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Design;
+using RecruitmentSolutionsAPI.Extensions;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
 using RecruitmentSolutionsAPI.Models.Responses;
 
@@ -24,79 +26,52 @@ public class ErrorWrappingMiddleware
     public async Task Invoke(HttpContext context)
     {
         var jsonFormatOptions = new JsonSerializerOptions { WriteIndented = true };
-        var json = string.Empty;
+        var errorResponse = string.Empty;
         try
         {
             await _next.Invoke(context);
         }
         catch (HttpResponseException ex)
         {
-            var apiBaseResponse = new ApiResponse(ex.StatusCode, ex.StackTrace, ex.GetType().ToString(), ex.Value.ToString(), ex.InternalCode);
-            var apiAlteredResponse = apiBaseResponse.properties;
-            apiAlteredResponse.TryAdd("Useful", GenerateUsefulJsonField(apiAlteredResponse["StackTrace"], "Expected Error on"));
+            var apiBaseResponse = new ApiErrorResponse
+                (ex.StatusCode, ex.StackTrace, ex.GetType().ToString(), ex.TargetSite.ToString(),
+                    ex.PublicObject.ToString(), ex.InternalCode);
 
-            if (!hostEnvironment.IsDevelopment())
+            if (hostEnvironment.IsDevelopment())
             {
-                var devJson = JsonSerializer.Serialize(apiAlteredResponse, jsonFormatOptions);
-                apiAlteredResponse.Clear();
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
+            }
+            else
+            {
+                // hacer algo con allProperties... guardar en el log... etc
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
             }
 
-            json = JsonSerializer.Serialize(apiAlteredResponse, jsonFormatOptions);
+            context.Response.StatusCode = apiBaseResponse.StatusCode;
         }
         catch (Exception ex)
         {
-            _logger.LogError(context.TraceIdentifier, ex, ex.Message);
-
-            var genericException = ex.GetType().GetProperties()
-                .ToDictionary(x => x.Name, x => x.GetValue(ex)?.ToString() ?? "");
-
-            genericException.TryAdd("Useful", GenerateUsefulJsonField(genericException["StackTrace"], "Unexpected Error on"));
-
-            var error2 = new Dictionary<string, string>
-            {
-                {"Type", ex.GetType().ToString()},
-                {"Message", ex.Message + " - Unexpected Exception"},
-                {"StackTrace", ex.StackTrace}
-            };
-            foreach (DictionaryEntry data in ex.Data)
-                error2.TryAdd(data.Key.ToString(), data.Value.ToString());
+            //_logger.LogError(context.TraceIdentifier, ex, ex.Message);
+            var apiBaseResponse = new ApiErrorResponse
+                (500, ex.StackTrace, ex.GetType().ToString(), ex.TargetSite.ToString(), originalErrorMessage: ex.Message);
 
             if (!hostEnvironment.IsDevelopment())
             {
-                var devJson = JsonSerializer.Serialize(genericException, jsonFormatOptions);
-                genericException.Clear();
-                genericException.TryAdd("Type", "Internal Server Error");
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.allProperties, jsonFormatOptions);
+            }
+            else
+            {
+                // hacer algo con allProperties... guardar en el log... etc
+                errorResponse = JsonSerializer.Serialize(apiBaseResponse.publicProperties, jsonFormatOptions);
             }
 
-            json = JsonSerializer.Serialize(genericException, jsonFormatOptions);
-            context.Response.StatusCode = 500;
-
-            //var response = new ApiResponse(context.Response.StatusCode);
-            //json = JsonSerializer.Serialize(response);
+            context.Response.StatusCode = apiBaseResponse.StatusCode;
         }
 
         if (!context.Response.HasStarted)
         {
             context.Response.ContentType = "application/json";
-
-            //var response = new ApiResponse(context.Response.StatusCode);
-
-            //var json = JsonSerializer.Serialize(response);
-
-            await context.Response.WriteAsync(json);
+            await context.Response.WriteAsync(errorResponse);
         }
-    }
-
-    private string GenerateUsefulJsonField(string stackTrace, string initialMessage)
-    {
-        const string patternMatchLine = @"line\s\d*";
-        var regexMatchLine = new Regex(patternMatchLine, RegexOptions.IgnoreCase);
-        var lineError = regexMatchLine.Match(stackTrace).ToString();
-
-        const string patternMatchController = @"\S*\d*\S*\d*.cs";
-        var regexMatchController = new Regex(patternMatchController, RegexOptions.IgnoreCase);
-        var controllerError = regexMatchController.Match(stackTrace).ToString();
-
-        return initialMessage + " " + lineError + " inside " + controllerError;
     }
 }

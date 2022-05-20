@@ -6,6 +6,7 @@ using RecruitmentSolutionsAPI.Interfaces;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
+using RecruitmentSolutionsAPI.Models.Responses;
 
 namespace RecruitmentSolutionsAPI.Controllers
 {
@@ -34,6 +35,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpPost]
         public CandidateResponse Post(CandidateRequest request)
         {
+            throw new HttpResponseException(StatusCodes.Status404NotFound, "E002", "Candidato inválido.");
             var candidate = new Candidate
             {
                 Address = request.Address,
@@ -64,16 +66,14 @@ namespace RecruitmentSolutionsAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public CandidateResponse GetById(int id)
+        public ApiResponse GetById(int id)
         {
-            var candidateModel = new CandidateResponse();
-
             var candidate = unitOfWork.Candidate.GetById(id);
             if (candidate == null)
             {
                 throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
             }
-            candidateModel = new CandidateResponse
+            var response = new CandidateResponse
             {
                 Address = candidate.Address,
                 Email = candidate.Email,
@@ -81,9 +81,7 @@ namespace RecruitmentSolutionsAPI.Controllers
                 LastName = candidate.LastName,
                 Phone = candidate.Phone
             };
-
-            return candidateModel;
-            //try{}catch{return new CandidateRequest(){Error = new HttpResponseException(StatusCodes.Status404NotFound, e)};}
+            return new ApiOkResponse(response);
         }
 
         [Route("/error-development")]

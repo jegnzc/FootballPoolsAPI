@@ -20,5 +20,5 @@ public class CandidateResponse
     public string Address { get; set; }
 
     //public GenericException Error { get; set; }
-    public ApiResponse Error { get; set; }
+    public ApiErrorResponse Error { get; set; }
 }
