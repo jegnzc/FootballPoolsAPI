@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.ExceptionHandlers;
+using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
+using RecruitmentSolutionsAPI.Models.Responses;
 
 namespace RecruitmentSolutionsAPI.Middleware;
 
@@ -29,23 +31,17 @@ public class ErrorWrappingMiddleware
         }
         catch (HttpResponseException ex)
         {
-            var error = new Dictionary<string, string>
-            {
-                {"Type", ex.GetType().ToString()},
-                {"Message", ex.Message},
-                {"StackTrace", ex.StackTrace},
-                {"Value", ex.Value.ToString()},
-                {"ErrorCode", ex.StatusCode.ToString()}
-            };
+            var apiBaseResponse = new ApiResponse(ex.StatusCode, ex.StackTrace, ex.GetType().ToString(), ex.Value.ToString(), ex.InternalCode);
+            var apiAlteredResponse = apiBaseResponse.properties;
+            apiAlteredResponse.TryAdd("Useful", GenerateUsefulJsonField(apiAlteredResponse["StackTrace"], "Expected Error on"));
 
             if (!hostEnvironment.IsDevelopment())
             {
-                var devJson = JsonSerializer.Serialize(error, jsonFormatOptions);
-                error.Clear();
-                error.Add("Type", "Internal Server Error");
+                var devJson = JsonSerializer.Serialize(apiAlteredResponse, jsonFormatOptions);
+                apiAlteredResponse.Clear();
             }
 
-            json = JsonSerializer.Serialize(error, jsonFormatOptions);
+            json = JsonSerializer.Serialize(apiAlteredResponse, jsonFormatOptions);
         }
         catch (Exception ex)
         {
@@ -54,16 +50,7 @@ public class ErrorWrappingMiddleware
             var genericException = ex.GetType().GetProperties()
                 .ToDictionary(x => x.Name, x => x.GetValue(ex)?.ToString() ?? "");
 
-            string text = genericException["StackTrace"];
-            string patternMatchLine = @"line\s\d*";
-
-            var regexMatchLine = new Regex(patternMatchLine, RegexOptions.IgnoreCase);
-            var lineError = regexMatchLine.Match(text).ToString();
-
-            var patternMatchController = @"\S*\d*\S*\d*.cs";
-            var regexMatchController = new Regex(patternMatchController, RegexOptions.IgnoreCase);
-            var controllerError = regexMatchController.Match(text).ToString();
-            genericException.Add("Useful", "Unexpected Exception on " + lineError + " inside " + controllerError + ": " + genericException["Message"]);
+            genericException.TryAdd("Useful", GenerateUsefulJsonField(genericException["StackTrace"], "Unexpected Error on"));
 
             var error2 = new Dictionary<string, string>
             {
@@ -72,13 +59,13 @@ public class ErrorWrappingMiddleware
                 {"StackTrace", ex.StackTrace}
             };
             foreach (DictionaryEntry data in ex.Data)
-                error2.Add(data.Key.ToString(), data.Value.ToString());
+                error2.TryAdd(data.Key.ToString(), data.Value.ToString());
 
             if (!hostEnvironment.IsDevelopment())
             {
                 var devJson = JsonSerializer.Serialize(genericException, jsonFormatOptions);
                 genericException.Clear();
-                genericException.Add("Type", "Internal Server Error");
+                genericException.TryAdd("Type", "Internal Server Error");
             }
 
             json = JsonSerializer.Serialize(genericException, jsonFormatOptions);
@@ -98,5 +85,18 @@ public class ErrorWrappingMiddleware
 
             await context.Response.WriteAsync(json);
         }
+    }
+
+    private string GenerateUsefulJsonField(string stackTrace, string initialMessage)
+    {
+        const string patternMatchLine = @"line\s\d*";
+        var regexMatchLine = new Regex(patternMatchLine, RegexOptions.IgnoreCase);
+        var lineError = regexMatchLine.Match(stackTrace).ToString();
+
+        const string patternMatchController = @"\S*\d*\S*\d*.cs";
+        var regexMatchController = new Regex(patternMatchController, RegexOptions.IgnoreCase);
+        var controllerError = regexMatchController.Match(stackTrace).ToString();
+
+        return initialMessage + " " + lineError + " inside " + controllerError;
     }
 }

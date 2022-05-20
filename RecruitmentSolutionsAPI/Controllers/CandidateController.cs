@@ -2,10 +2,10 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.ExceptionHandlers;
 using RecruitmentSolutionsAPI.Interfaces;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
+using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
 
 namespace RecruitmentSolutionsAPI.Controllers
 {
@@ -71,7 +71,7 @@ namespace RecruitmentSolutionsAPI.Controllers
             var candidate = unitOfWork.Candidate.GetById(id);
             if (candidate == null)
             {
-                throw new HttpResponseException(StatusCodes.Status404NotFound, "A: Candidato no encontrado.");
+                throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
             }
             candidateModel = new CandidateResponse
             {

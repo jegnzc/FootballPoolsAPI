@@ -1,5 +1,4 @@
-﻿using RecruitmentSolutionsAPI.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models.Responses;
+﻿using RecruitmentSolutionsAPI.Models.Responses;
 
 namespace RecruitmentSolutionsAPI.Models.Candidate;
 

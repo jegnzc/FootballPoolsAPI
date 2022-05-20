@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data;
 using RecruitmentSolutionsAPI.Interfaces;
@@ -16,10 +15,6 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
