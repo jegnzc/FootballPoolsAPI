@@ -15,19 +15,20 @@ public class ErrorController : ControllerBase
         [FromServices] IHostEnvironment hostEnvironment)
     {
         int? statusCode;
-        ApiErrorResponse apiBaseResponse = null;
+        ApiErrorResponse? apiBaseResponse = null;
         if (!hostEnvironment.IsDevelopment())
         {
             return NotFound();
         }
         var exceptionHandlerFeature =
             HttpContext.Features.Get<IExceptionHandlerFeature>();
+
         // entonces nosotros fuimos los que generamos el error...
-        if (exceptionHandlerFeature.Error is HttpResponseException expectedException)
+        if (exceptionHandlerFeature?.Error is HttpResponseException expectedException)
         {
             apiBaseResponse = new ApiErrorResponse
             (expectedException.StatusCode, expectedException.StackTrace, expectedException.GetType().ToString(),
-                expectedException.TargetSite.ToString(), expectedException.Request,
+                expectedException.TargetSite?.ToString(), expectedException.Request,
                 expectedException.PublicMessage, expectedException.InternalCode, expectedException.Message);
 
             statusCode = expectedException.StatusCode;
@@ -36,7 +37,7 @@ public class ErrorController : ControllerBase
         else
         {
             apiBaseResponse = new ApiErrorResponse
-                (500, exceptionHandlerFeature.Error.StackTrace, exceptionHandlerFeature.Error.GetType().ToString(), exceptionHandlerFeature.Error.TargetSite.ToString(), originalErrorMessage: exceptionHandlerFeature.Error.Message);
+                (500, exceptionHandlerFeature?.Error?.StackTrace, exceptionHandlerFeature?.Error?.GetType().ToString(), exceptionHandlerFeature?.Error?.TargetSite?.ToString(), originalErrorMessage: exceptionHandlerFeature?.Error?.Message);
             statusCode = 500;
         }
 

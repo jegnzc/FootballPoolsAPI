@@ -18,7 +18,4 @@ public class CandidateResponse
     public string Email { get; set; }
     public string Phone { get; set; }
     public string Address { get; set; }
-
-    //public GenericException Error { get; set; }
-    public ApiErrorResponse Error { get; set; }
 }

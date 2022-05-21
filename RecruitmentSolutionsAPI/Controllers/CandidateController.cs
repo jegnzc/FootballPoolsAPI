@@ -35,9 +35,6 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpPost]
         public CandidateResponse Post(CandidateRequest request)
         {
-            throw new
-                HttpResponseException(StatusCodes.Status404NotFound, "E002",
-                    "Candidato inválido", request);
             var candidate = new Candidate
             {
                 Address = request.Address,
@@ -48,13 +45,12 @@ namespace RecruitmentSolutionsAPI.Controllers
             };
             unitOfWork.Candidate.Add(candidate);
             unitOfWork.Save();
-            return new CandidateResponse() { FirstName = "Exito" };
+            return new CandidateResponse();
         }
 
         [HttpGet]
         public IEnumerable<CandidateResponse> Get()
         {
-            throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
             var candidates = unitOfWork.Candidate.GetAll();
 
             return candidates.Select(candidate => new CandidateResponse
@@ -69,13 +65,9 @@ namespace RecruitmentSolutionsAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ApiResponse GetById(int id)
+        public CandidateResponse GetById(int id)
         {
             var candidate = unitOfWork.Candidate.GetById(id);
-            //if (candidate == null)
-            //{
-            //    throw new HttpResponseException(StatusCodes.Status404NotFound, "E001", "Candidato no encontrado.");
-            //}
             var response = new CandidateResponse
             {
                 Address = candidate.Address,
@@ -84,7 +76,21 @@ namespace RecruitmentSolutionsAPI.Controllers
                 LastName = candidate.LastName,
                 Phone = candidate.Phone
             };
-            return new ApiOkResponse(response);
+            return response;
+        }
+
+        [HttpPut("{id}")]
+        public ApiOkResponse UpdateCandidate(int id, CandidateRequest request)
+        {
+            var candidate = unitOfWork.Candidate.GetById(id);
+            candidate.FirstName = request.FirstName;
+            candidate.LastName = request.LastName;
+            candidate.Phone = request.Phone;
+            candidate.Address = request.Address;
+            candidate.Email = request.Email;
+            unitOfWork.Candidate.Update(candidate);
+            unitOfWork.Save();
+            return new ApiOkResponse();
         }
     }
 }

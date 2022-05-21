@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data;
 using RecruitmentSolutionsAPI.Interfaces;
 using RecruitmentSolutionsAPI.Repositories;
-using RecruitmentSolutionsAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +39,5 @@ else
 app.UseAuthorization();
 
 app.MapControllers();
-//app.UseMyMiddleware();
 
 app.Run();

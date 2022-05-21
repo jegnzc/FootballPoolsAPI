@@ -1,9 +1,10 @@
 ﻿namespace RecruitmentSolutionsAPI.Models.Responses;
+
 public class ApiResponse
 {
     public int StatusCode { get; }
 
-    public string Message { get; }
+    public string? Message { get; }
 
     public ApiResponse(int statusCode, string? message = null)
     {
@@ -11,12 +12,13 @@ public class ApiResponse
         Message = message ?? GetDefaultMessageForStatusCode(statusCode);
     }
 
-    private static string GetDefaultMessageForStatusCode(int statusCode)
+    private static string? GetDefaultMessageForStatusCode(int statusCode)
     {
         switch (statusCode)
         {
             case 200:
                 return "Ok";
+
             case 404:
                 return "Resource not found";
 

@@ -18,6 +18,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         context.Set<T>().Add(entity);
     }
 
+    public void Update(T entity)
+    {
+        context.Set<T>().Update(entity);
+    }
+
     public void AddRange(IEnumerable<T> entities)
     {
         context.Set<T>().AddRange(entities);

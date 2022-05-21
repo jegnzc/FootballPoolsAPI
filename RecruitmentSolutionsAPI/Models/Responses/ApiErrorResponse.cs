@@ -8,17 +8,17 @@ namespace RecruitmentSolutionsAPI.Models.Responses;
 
 public class ApiErrorResponse
 {
-    public string Type { get; }
-    public string StackTrace { get; }
-    public string PublicMessage { get; }
-    public string InternalCode { get; }
-    public string OriginalErrorMessage { get; }
-    public string TargetSite { get; }
-    public object Request { get; }
+    public string? Type { get; }
+    public string? StackTrace { get; }
+    public string? PublicMessage { get; }
+    public string? InternalCode { get; }
+    public string? OriginalErrorMessage { get; }
+    public string? TargetSite { get; }
+    public object? Request { get; }
     public ErrorModel AllProperties { get; set; }
     public ErrorModel PublicProperties { get; set; }
 
-    public ApiErrorResponse(int statusCode, string stackTrace, string type, string targetSite, object? request = null, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null)
+    public ApiErrorResponse(int statusCode, string? stackTrace, string? type, string? targetSite, object? request = null, string? publicMessage = null, string? internalCode = null, string? originalErrorMessage = null)
     {
         AllProperties = new ErrorModel();
         StackTrace = stackTrace;
