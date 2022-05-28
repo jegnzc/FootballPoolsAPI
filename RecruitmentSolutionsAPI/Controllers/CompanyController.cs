@@ -1,8 +1,9 @@
 using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Interfaces;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
@@ -14,11 +15,11 @@ namespace RecruitmentSolutionsAPI.Controllers
     [Route("[controller]")]
     public class CompanyController : ControllerBase
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly ApplicationDbContext _context;
 
-        public CompanyController(IUnitOfWork unitOfWork)
+        public CompanyController(ApplicationDbContext context)
         {
-            this.unitOfWork = unitOfWork;
+            this._context = context;
         }
 
         [HttpPost]
@@ -28,8 +29,8 @@ namespace RecruitmentSolutionsAPI.Controllers
             {
                 Name = request.Name
             };
-            unitOfWork.Company.Add(company);
-            unitOfWork.Save();
+            _context.Companies.Add(company);
+            _context.SaveChanges();
             return new CandidateResponse();
         }
 
@@ -37,7 +38,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [Route("/companies")]
         public IEnumerable<CompanyResponse> Get()
         {
-            var companies = unitOfWork.Company.GetAll();
+            var companies = _context.Companies.ToList();
 
             return companies.Select(candidate => new CompanyResponse
             {
@@ -50,7 +51,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet("{id}")]
         public CompanyResponse GetById(int id)
         {
-            var candidate = unitOfWork.Company.GetById(id);
+            var candidate = _context.Companies.SingleOrDefault(x => x.Id == id);
             var response = new CompanyResponse
             {
                 Name = candidate.Name
@@ -61,28 +62,33 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet("{id}/pipelines")]
         public IEnumerable<PipelineResponse> GetCompanyPipelineById(int id)
         {
-            var pipelines = unitOfWork.Company.GetAllPopulated(x => x.Pipelines);
+            var pipelines = _context.Companies.Where(x => x.Id == id).SelectMany(x => x.Pipelines).ToList();
             var pipelinesResponses = new List<PipelineResponse>();
-            //foreach (var pipeline in pipelines)
-            //{
-            //    var pipelineResponse = new PipelineResponse
-            //    {
-            //        Name = pipeline.Name,
-            //        Description = pipeline.Description,
-            //        CompanyId = pipeline.CompanyId
-            //    };
-            //    pipelinesResponses.Add(pipelineResponse);
-            //}
+            foreach (var pipeline in pipelines)
+            {
+                var pipelineResponse = new PipelineResponse
+                {
+                    Name = pipeline.Name,
+                    Description = pipeline.Description,
+                    CompanyId = pipeline.CompanyId
+                };
+                pipelinesResponses.Add(pipelineResponse);
+            }
             return pipelinesResponses;
         }
 
         [HttpGet("{id}/pipeline/{pipelineId}")]
         public PipelineResponse GetCompanyPipelineById(int id, int pipelineId)
         {
-            var pipeline = unitOfWork.Company.GetById(id).Pipelines.FirstOrDefault(x => x.Id == pipelineId);
+            var pipeline = _context.Companies
+                .Where(x => x.Id == id)
+                .SelectMany(x => x.Pipelines)
+                .ToList()
+                .SingleOrDefault(x => x.Id == pipelineId);
             var response = new PipelineResponse
             {
-                Name = pipeline.Name
+                Name = pipeline.Name,
+                Description = pipeline.Description
             };
             return response;
         }
@@ -90,7 +96,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet("{id}/questionnaires")]
         public IEnumerable<QuestionnaireResponse> GetCompanyQuestionnaireById(int id)
         {
-            var questionnaires = unitOfWork.Company.GetById(id).Questionnaires.ToList();
+            var questionnaires = _context.Companies.Where(x => x.Id == id).SelectMany(x => x.Questionnaires).ToList();
             var questionnaireResponses = new List<QuestionnaireResponse>();
             foreach (var questionnaire in questionnaires)
             {
@@ -108,10 +114,15 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet("{id}/questionnaire/{questionnaireId}")]
         public QuestionnaireResponse GetCompanyQuestionnaireById(int id, int questionnaireId)
         {
-            var questionnaire = unitOfWork.Company.GetById(id).Questionnaires.FirstOrDefault(x => x.Id == questionnaireId);
+            var questionnaire = _context.Companies
+                .Where(x => x.Id == id)
+                .SelectMany(x => x.Questionnaires)
+                .ToList()
+                .SingleOrDefault(x => x.Id == questionnaireId);
             var response = new QuestionnaireResponse
             {
-                Name = questionnaire.Name
+                Name = questionnaire.Name,
+                Score = questionnaire.Score
             };
             return response;
         }

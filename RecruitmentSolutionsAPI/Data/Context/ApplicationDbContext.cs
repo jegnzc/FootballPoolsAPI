@@ -12,4 +12,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Candidate> Candidates { get; set; }
     public DbSet<Company> Companies { get; set; }
     public DbSet<Questionnaire> Questionnaires { get; set; }
+    public DbSet<Pipeline> Pipelines { get; set; }
+    public DbSet<Answer> Answers { get; set; }
+    public DbSet<Question> Questions { get; set; }
+    public DbSet<Position> Positions { get; set; }
 }

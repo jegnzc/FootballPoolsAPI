@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Interfaces;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
@@ -14,11 +14,11 @@ namespace RecruitmentSolutionsAPI.Controllers
     [Route("[controller]")]
     public class QuestionnaireController : ControllerBase
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly ApplicationDbContext _context;
 
-        public QuestionnaireController(IUnitOfWork unitOfWork)
+        public QuestionnaireController(ApplicationDbContext context)
         {
-            this.unitOfWork = unitOfWork;
+            this._context = context;
         }
 
         [HttpPost]
@@ -30,8 +30,8 @@ namespace RecruitmentSolutionsAPI.Controllers
                 CompanyId = request.CompanyId,
                 Score = request.Score
             };
-            unitOfWork.Questionnaire.Add(questionnaire);
-            unitOfWork.Save();
+            _context.Questionnaires.Add(questionnaire);
+            _context.SaveChanges();
             return new QuestionnaireResponse();
         }
     }

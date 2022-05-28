@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Interfaces;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
@@ -14,11 +14,11 @@ namespace RecruitmentSolutionsAPI.Controllers
     [Route("[controller]")]
     public class PipelineController : ControllerBase
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly ApplicationDbContext _context;
 
-        public PipelineController(IUnitOfWork unitOfWork)
+        public PipelineController(ApplicationDbContext context)
         {
-            this.unitOfWork = unitOfWork;
+            this._context = context;
         }
 
         [HttpPost]
@@ -30,8 +30,8 @@ namespace RecruitmentSolutionsAPI.Controllers
                 Description = request.Description,
                 CompanyId = request.CompanyId
             };
-            unitOfWork.Pipeline.Add(pipeline);
-            unitOfWork.Save();
+            _context.Pipelines.Add(pipeline);
+            _context.SaveChanges();
             return new PipelineResponse();
         }
     }

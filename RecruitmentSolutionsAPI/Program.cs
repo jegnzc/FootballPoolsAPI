@@ -1,8 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data.Context;
-using RecruitmentSolutionsAPI.Interfaces;
-using RecruitmentSolutionsAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +9,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(options =>

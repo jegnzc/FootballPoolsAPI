@@ -2,7 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Interfaces;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Models;
 using RecruitmentSolutionsAPI.Models.Candidate;
 using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
@@ -25,15 +25,15 @@ namespace RecruitmentSolutionsAPI.Controllers
 
         #endregion borrar
 
-        private readonly IUnitOfWork unitOfWork;
+        private readonly ApplicationDbContext _context;
 
-        public CandidateController(IUnitOfWork unitOfWork)
+        public CandidateController(ApplicationDbContext context)
         {
-            this.unitOfWork = unitOfWork;
+            this._context = context;
         }
 
         [HttpPost]
-        public CandidateResponse Post(CandidateRequest request)
+        public async Task<CandidateResponse> Post(CandidateRequest request)
         {
             var candidate = new Candidate
             {
@@ -43,15 +43,15 @@ namespace RecruitmentSolutionsAPI.Controllers
                 LastName = request.LastName,
                 Phone = request.Phone
             };
-            unitOfWork.Candidate.Add(candidate);
-            unitOfWork.Save();
+            await _context.Candidates.AddAsync(candidate).ConfigureAwait(false);
+            await _context.SaveChangesAsync();
             return new CandidateResponse();
         }
 
         [HttpGet]
         public IEnumerable<CandidateResponse> Get()
         {
-            var candidates = unitOfWork.Candidate.GetAll();
+            var candidates = _context.Candidates.ToList();
 
             return candidates.Select(candidate => new CandidateResponse
             {
@@ -67,7 +67,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpGet("{id}")]
         public CandidateResponse GetById(int id)
         {
-            var candidate = unitOfWork.Candidate.GetById(id);
+            var candidate = _context.Candidates.SingleOrDefault(x => x.Id == id);
             var response = new CandidateResponse
             {
                 Address = candidate.Address,
@@ -82,14 +82,14 @@ namespace RecruitmentSolutionsAPI.Controllers
         [HttpPut("{id}")]
         public ApiOkResponse UpdateCandidate(int id, CandidateRequest request)
         {
-            var candidate = unitOfWork.Candidate.GetById(id);
+            var candidate = _context.Candidates.FirstOrDefault(x => x.Id == id);
             candidate.FirstName = request.FirstName;
             candidate.LastName = request.LastName;
             candidate.Phone = request.Phone;
             candidate.Address = request.Address;
             candidate.Email = request.Email;
-            unitOfWork.Candidate.Update(candidate);
-            unitOfWork.Save();
+            _context.Candidates.Update(candidate);
+            _context.SaveChanges();
             return new ApiOkResponse();
         }
     }
