@@ -4,9 +4,9 @@ using RecruitmentSolutionsAPI.Interfaces;
 
 namespace RecruitmentSolutionsAPI.Repositories;
 
-internal class CandidateRepository : GenericRepository<Candidate>, ICandidateRepository
+internal class QuestionnaireRepository : GenericRepository<Questionnaire>, IQuestionnaireRepository
 {
-    public CandidateRepository(ApplicationDbContext context) : base(context)
+    public QuestionnaireRepository(ApplicationDbContext context) : base(context)
     {
     }
 }

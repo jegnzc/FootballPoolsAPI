@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using RecruitmentSolutionsAPI.Data;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Interfaces;
 using RecruitmentSolutionsAPI.Repositories;
 

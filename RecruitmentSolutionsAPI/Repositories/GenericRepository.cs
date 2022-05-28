@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data;
+using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Interfaces;
 
 namespace RecruitmentSolutionsAPI.Repositories;
@@ -51,5 +53,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public void RemoveRange(IEnumerable<T> entities)
     {
         context.Set<T>().RemoveRange(entities);
+    }
+
+    public ICollection<TType> Get<TType>(Expression<Func<T, bool>> where, Expression<Func<T, TType>> select) where TType : class
+    {
+        return context.Set<T>().Where(where).Select(select).ToList();
     }
 }

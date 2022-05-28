@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecruitmentSolutionsAPI.Data.Context;
 
@@ -10,9 +11,10 @@ using RecruitmentSolutionsAPI.Data.Context;
 namespace RecruitmentSolutionsAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220528023601_FixedCompanyId")]
+    partial class FixedCompanyId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,7 +103,11 @@ namespace RecruitmentSolutionsAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CompanyId")
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId1")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -114,7 +120,7 @@ namespace RecruitmentSolutionsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
+                    b.HasIndex("CompanyId1");
 
                     b.ToTable("Pipeline");
                 });
@@ -184,7 +190,7 @@ namespace RecruitmentSolutionsAPI.Migrations
                 {
                     b.HasOne("RecruitmentSolutionsAPI.Data.Company", "Company")
                         .WithMany("Pipelines")
-                        .HasForeignKey("CompanyId")
+                        .HasForeignKey("CompanyId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
