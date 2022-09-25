@@ -82,10 +82,10 @@ builder.Services.Configure<MailKitEmailSenderOptions>(options =>
     options.Host_Address = "smtp.gmail.com";
     options.Host_Port = 587;
     options.Host_SecureSocketOptions = MailKit.Security.SecureSocketOptions.StartTls;
-    options.Host_Username = "dmaksjdasjdopas@gmail.com";
-    options.Host_Password = "wynstdasdtrbcdpoaixh";
-    options.Sender_Email = "dkoapskdpoaskdp@gmail.com";
-    options.Sender_Name = "robert";
+    options.Host_Username = "jegnzc@gmail.com";
+    options.Host_Password = "wynsttrbcdpoaixh";
+    options.Sender_Email = "jegnzc@gmail.com";
+    options.Sender_Name = "jegnzc";
 });
 
 //builder.Services.AddHttpContextAccessor();

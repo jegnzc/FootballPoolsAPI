@@ -93,6 +93,75 @@ namespace FootballPools.Data.Migrations.Business
                     b.ToTable("Companies");
                 });
 
+            modelBuilder.Entity("FootballPools.Data.League", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Leagues");
+                });
+
+            modelBuilder.Entity("FootballPools.Data.LeagueInvitation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeagueId");
+
+                    b.ToTable("LeagueInvitations");
+                });
+
+            modelBuilder.Entity("FootballPools.Data.LeagueMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("LeagueId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeagueId");
+
+                    b.ToTable("LeagueMembers");
+                });
+
             modelBuilder.Entity("FootballPools.Data.Pipeline", b =>
                 {
                     b.Property<int>("Id")
@@ -211,6 +280,28 @@ namespace FootballPools.Data.Migrations.Business
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("FootballPools.Data.LeagueInvitation", b =>
+                {
+                    b.HasOne("FootballPools.Data.League", "League")
+                        .WithMany("LeagueInvitations")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+                });
+
+            modelBuilder.Entity("FootballPools.Data.LeagueMember", b =>
+                {
+                    b.HasOne("FootballPools.Data.League", "League")
+                        .WithMany("LeagueMembers")
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("League");
+                });
+
             modelBuilder.Entity("FootballPools.Data.Pipeline", b =>
                 {
                     b.HasOne("FootballPools.Data.Company", "Company")
@@ -249,6 +340,13 @@ namespace FootballPools.Data.Migrations.Business
                     b.Navigation("Pipelines");
 
                     b.Navigation("Questionnaires");
+                });
+
+            modelBuilder.Entity("FootballPools.Data.League", b =>
+                {
+                    b.Navigation("LeagueInvitations");
+
+                    b.Navigation("LeagueMembers");
                 });
 
             modelBuilder.Entity("FootballPools.Data.Question", b =>

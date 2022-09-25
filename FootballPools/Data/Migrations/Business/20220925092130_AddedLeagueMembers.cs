@@ -4,7 +4,7 @@
 
 namespace FootballPools.Data.Migrations.Business
 {
-    public partial class InitialData : Migration
+    public partial class AddedLeagueMembers : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -36,6 +36,20 @@ namespace FootballPools.Data.Migrations.Business
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Companies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Leagues",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Leagues", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -98,6 +112,47 @@ namespace FootballPools.Data.Migrations.Business
                 });
 
             migrationBuilder.CreateTable(
+                name: "LeagueInvitations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeagueId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeagueInvitations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeagueInvitations_Leagues_LeagueId",
+                        column: x => x.LeagueId,
+                        principalTable: "Leagues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LeagueMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LeagueId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LeagueMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LeagueMembers_Leagues_LeagueId",
+                        column: x => x.LeagueId,
+                        principalTable: "Leagues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -144,6 +199,16 @@ namespace FootballPools.Data.Migrations.Business
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_LeagueInvitations_LeagueId",
+                table: "LeagueInvitations",
+                column: "LeagueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_LeagueMembers_LeagueId",
+                table: "LeagueMembers",
+                column: "LeagueId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pipelines_CompanyId",
                 table: "Pipelines",
                 column: "CompanyId");
@@ -168,6 +233,12 @@ namespace FootballPools.Data.Migrations.Business
                 name: "Candidates");
 
             migrationBuilder.DropTable(
+                name: "LeagueInvitations");
+
+            migrationBuilder.DropTable(
+                name: "LeagueMembers");
+
+            migrationBuilder.DropTable(
                 name: "Pipelines");
 
             migrationBuilder.DropTable(
@@ -175,6 +246,9 @@ namespace FootballPools.Data.Migrations.Business
 
             migrationBuilder.DropTable(
                 name: "Questions");
+
+            migrationBuilder.DropTable(
+                name: "Leagues");
 
             migrationBuilder.DropTable(
                 name: "Questionnaires");

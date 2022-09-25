@@ -27,3 +27,22 @@ public class Login
 public class LoginResponse
 {
 }
+
+public class CreateLeagueInvitation
+{
+    public int LeagueId { get; set; }
+    public string UserId { get; set; }
+}
+
+public class CreateLeagueInvitationResponse
+{
+}
+
+public class CreateLeague
+{
+    public string Name { get; set; }
+}
+
+public class CreateLeagueResponse
+{
+}

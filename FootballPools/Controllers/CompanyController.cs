@@ -3,11 +3,14 @@ using FootballPools.Data;
 using FootballPools.Data.Context;
 using FootballPools.Models.Candidate;
 using FootballPools.Models.Company;
+using FootballPools.Models.ExceptionHandlers;
 using FootballPools.Models.Pipeline;
 using FootballPools.Models.Questionnaire;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace FootballPools.Controllers
 {
@@ -18,20 +21,66 @@ namespace FootballPools.Controllers
     {
         private readonly ApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
+        private readonly UserManager<User> _userManager;
 
-        public CompanyController(ApplicationDbContext context, IEmailSender emailSender)
+        public CompanyController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
+            _userManager = userManager;
             _context = context;
             _emailSender = emailSender;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Send(string toAddress)
+        [HttpPost("createLeague")]
+        public async Task<IActionResult> Post(CreateLeague request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
-            var subject = "Hola";
-            var body = $"Su id es: {userId}";
-            await _emailSender.SendEmailAsync(toAddress, subject, body);
+            await _context.Leagues.AddAsync(new League()
+            {
+                Name = request.Name,
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+            });
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("createLeagueInvitation")]
+        public async Task<IActionResult> Post(CreateLeagueInvitation request)
+        {
+            var leagueInvitation = new LeagueInvitation()
+            {
+                LeagueId = request.LeagueId,
+                UserId = request.UserId,
+                Token = Guid.NewGuid().ToString(),
+            };
+            await _context.LeagueInvitations.AddAsync(new LeagueInvitation()
+            {
+                LeagueId = request.LeagueId,
+                UserId = request.UserId,
+                Token = leagueInvitation.Token,
+            });
+            await _context.SaveChangesAsync();
+
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            var subject = "Invitación a liga";
+            var body = "https://localhost:7200/company/acceptLeagueInvitation/" + leagueInvitation.Token;
+
+            await _emailSender.SendEmailAsync(user.Email, subject, body);
+
+            return Ok();
+        }
+
+        [HttpGet("acceptLeagueInvitation/{leagueInvitationToken}")]
+        public async Task<IActionResult> Get(string leagueInvitationToken)
+        {
+            var leagueInvitation = _context.LeagueInvitations.SingleOrDefault(x => x.Token == leagueInvitationToken);
+            if (leagueInvitation == null)
+                throw new HttpResponseException(500, "Token inválido");
+            _context.LeagueMembers.Add(new LeagueMember()
+            {
+                LeagueId = leagueInvitation.LeagueId,
+                UserId = leagueInvitation.UserId
+            });
+
+            await _context.SaveChangesAsync();
             return Ok();
         }
 
@@ -39,8 +88,6 @@ namespace FootballPools.Controllers
         [Route("/companies")]
         public async Task<IEnumerable<CompanyResponse>> Get()
         {
-            await Send("daskdjasdopkas@gmail.com");
-
             var companies = _context.Companies.ToList();
             return companies.Select(candidate => new CompanyResponse
             {
@@ -48,20 +95,6 @@ namespace FootballPools.Controllers
                 Name = candidate.Name
             })
                 .ToList();
-        }
-
-        [HttpGet]
-        [Route("/companies")]
-        public async Task<IActionResult> Post(Register request)
-        {
-            var companies = _context.Leagues.Add(new League()
-            {
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                Name = request.LastName
-            });
-            _context.SaveChanges();
-
-            return Ok();
         }
 
         [HttpGet("{id}")]
