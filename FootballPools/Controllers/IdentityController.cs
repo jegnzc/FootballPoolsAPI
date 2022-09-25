@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.Areas.Identity.Data;
 using RecruitmentSolutionsAPI.Data;
 using RecruitmentSolutionsAPI.Data.Context;
 using RecruitmentSolutionsAPI.Models;
@@ -16,6 +15,7 @@ using System.Text.Encodings.Web;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using FootballPools.Data;
 
 namespace RecruitmentSolutionsAPI.Controllers
 {
@@ -60,8 +60,8 @@ namespace RecruitmentSolutionsAPI.Controllers
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(Areas.Identity.Data.User)}'. " +
-                    $"Ensure that '{nameof(Areas.Identity.Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(FootballPools.Data.User)}'. " +
+                    $"Ensure that '{nameof(FootballPools.Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }

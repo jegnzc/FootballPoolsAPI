@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RecruitmentSolutionsAPI.Areas.Identity.Data;
 
-namespace RecruitmentSolutionsAPI.Data;
+namespace FootballPools.Data.Context;
 
 public class IdentityDbContext : IdentityDbContext<User>
 {

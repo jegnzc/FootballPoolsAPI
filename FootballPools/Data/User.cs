@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace RecruitmentSolutionsAPI.Areas.Identity.Data;
+namespace FootballPools.Data;
 
 // Add profile data for application users by adding properties to the RecruitmentSolutionsAPIUser class
 public class User : IdentityUser

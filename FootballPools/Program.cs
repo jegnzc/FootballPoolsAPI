@@ -2,12 +2,12 @@ using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data.Context;
 using Microsoft.AspNetCore.Identity;
-using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FootballPools.Data.Context;
+using FootballPools.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

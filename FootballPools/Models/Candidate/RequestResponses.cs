@@ -1,4 +1,4 @@
-﻿using RecruitmentSolutionsAPI.Areas.Identity.Data;
+﻿using FootballPools.Data;
 using RecruitmentSolutionsAPI.Models.Responses;
 
 namespace RecruitmentSolutionsAPI.Models.Candidate;
