@@ -1,5 +1,7 @@
 using System.Security.Claims;
+using FootballPools.Data;
 using FootballPools.Data.Context;
+using FootballPools.Models.Candidate;
 using FootballPools.Models.Company;
 using FootballPools.Models.Pipeline;
 using FootballPools.Models.Questionnaire;
@@ -46,6 +48,20 @@ namespace FootballPools.Controllers
                 Name = candidate.Name
             })
                 .ToList();
+        }
+
+        [HttpGet]
+        [Route("/companies")]
+        public async Task<IActionResult> Post(Register request)
+        {
+            var companies = _context.Leagues.Add(new League()
+            {
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                Name = request.LastName
+            });
+            _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpGet("{id}")]
