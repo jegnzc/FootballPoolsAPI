@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RecruitmentSolutionsAPI.Migrations.Identity
+namespace FootballPools.Data.Migrations.Identity
 {
-    public partial class IdentityInitial : Migration
+    public partial class InitialUsers : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -1,7 +1,7 @@
 ﻿using FootballPools.Data;
-using RecruitmentSolutionsAPI.Models.Responses;
+using FootballPools.Models.Responses;
 
-namespace RecruitmentSolutionsAPI.Models.Candidate;
+namespace FootballPools.Models.Candidate;
 
 public class Register
 {

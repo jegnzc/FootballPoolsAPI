@@ -1,14 +1,9 @@
-using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
+using FootballPools.Data.Context;
+using FootballPools.Models.Pipeline;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Data.Context;
-using RecruitmentSolutionsAPI.Models;
-using RecruitmentSolutionsAPI.Models.Candidate;
-using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models.Responses;
+using FootballPools.Data;
 
-namespace RecruitmentSolutionsAPI.Controllers
+namespace FootballPools.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -18,7 +13,7 @@ namespace RecruitmentSolutionsAPI.Controllers
 
         public PipelineController(ApplicationDbContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
         [HttpPost]

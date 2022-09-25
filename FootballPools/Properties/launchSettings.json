@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "RecruitmentSolutionsAPI": {
+    "FootballPools": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

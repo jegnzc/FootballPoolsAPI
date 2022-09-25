@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-using RecruitmentSolutionsAPI.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FootballPools.Data.Context;
 using FootballPools.Data;
+using System.Reflection;
+using System.Security.Principal;
+using FootballPools.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,12 +70,26 @@ builder.Services.AddAuthentication(opt =>
             ValidAudience = config["JWT:ValidAudience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]))
         };
-
     });
 
 builder.Services.AddIdentity<User, IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<IdentityDbContext>();
+
+builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();
+builder.Services.Configure<MailKitEmailSenderOptions>(options =>
+{
+    options.Host_Address = "smtp.gmail.com";
+    options.Host_Port = 587;
+    options.Host_SecureSocketOptions = MailKit.Security.SecureSocketOptions.StartTls;
+    options.Host_Username = "robertlmancio@gmail.com";
+    options.Host_Password = "ezeixbbmfndxonrj";
+    options.Sender_Email = "robertlmancio@gmail.com";
+    options.Sender_Name = "robert";
+});
+
+//builder.Services.AddHttpContextAccessor();
+//builder.Services.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User);
 
 // Add services to the container.
 

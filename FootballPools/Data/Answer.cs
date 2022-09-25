@@ -1,4 +1,4 @@
-﻿namespace RecruitmentSolutionsAPI.Data;
+﻿namespace FootballPools.Data;
 
 public class Answer
 {

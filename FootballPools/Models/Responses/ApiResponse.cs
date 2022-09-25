@@ -1,4 +1,4 @@
-﻿namespace RecruitmentSolutionsAPI.Models.Responses;
+﻿namespace FootballPools.Models.Responses;
 
 public class ApiResponse
 {

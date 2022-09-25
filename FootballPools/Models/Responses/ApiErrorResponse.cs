@@ -2,9 +2,9 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.Extensions;
+using FootballPools.Extensions;
 
-namespace RecruitmentSolutionsAPI.Models.Responses;
+namespace FootballPools.Models.Responses;
 
 public class ApiErrorResponse
 {

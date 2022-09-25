@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace RecruitmentSolutionsAPI.Data.Context;
+namespace FootballPools.Data.Context;
 
 public class ApplicationDbContext : DbContext
 {

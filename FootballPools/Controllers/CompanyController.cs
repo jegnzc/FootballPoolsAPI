@@ -1,36 +1,45 @@
-using System.Net;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using FootballPools.Data.Context;
+using FootballPools.Models.Company;
+using FootballPools.Models.Pipeline;
+using FootballPools.Models.Questionnaire;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Data.Context;
-using RecruitmentSolutionsAPI.Models;
-using RecruitmentSolutionsAPI.Models.Candidate;
-using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models.Responses;
 
-namespace RecruitmentSolutionsAPI.Controllers
+namespace FootballPools.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class CompanyController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        public IEmailSender _emailSender { get; set; }
 
-        public CompanyController(ApplicationDbContext context)
+        public CompanyController(ApplicationDbContext context, IEmailSender emailSender)
         {
-            this._context = context;
+            _context = context;
+            _emailSender = emailSender;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Send(string toAddress)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
+            var subject = "Hola";
+            var body = $"Su id es: {userId}";
+            await _emailSender.SendEmailAsync(toAddress, subject, body);
+            return Ok();
         }
 
         [HttpGet]
         [Route("/companies")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public IEnumerable<CompanyResponse> Get()
+        public async Task<IEnumerable<CompanyResponse>> Get()
         {
-            var companies = _context.Companies.ToList();
+            await Send("jegnzc@gmail.com");
 
+            var companies = _context.Companies.ToList();
             return companies.Select(candidate => new CompanyResponse
             {
                 Id = candidate.Id,

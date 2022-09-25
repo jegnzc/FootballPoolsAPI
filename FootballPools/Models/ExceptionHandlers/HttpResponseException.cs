@@ -1,4 +1,4 @@
-﻿namespace RecruitmentSolutionsAPI.Models.ExceptionHandlers;
+﻿namespace FootballPools.Models.ExceptionHandlers;
 
 public class HttpResponseException : Exception
 {

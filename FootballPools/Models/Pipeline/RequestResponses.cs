@@ -1,6 +1,6 @@
-﻿using RecruitmentSolutionsAPI.Models.Responses;
+﻿using FootballPools.Models.Responses;
 
-namespace RecruitmentSolutionsAPI.Models.Candidate;
+namespace FootballPools.Models.Pipeline;
 
 public class PipelineRequest
 {

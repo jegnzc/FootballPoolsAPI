@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FootballPools.Data;
 
-// Add profile data for application users by adding properties to the RecruitmentSolutionsAPIUser class
+// Add profile data for application users by adding properties to the FootballPoolsUser class
 public class User : IdentityUser
 {
 }

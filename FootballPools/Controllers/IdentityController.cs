@@ -1,23 +1,16 @@
-using System.Net;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.Data;
-using RecruitmentSolutionsAPI.Data.Context;
-using RecruitmentSolutionsAPI.Models;
-using RecruitmentSolutionsAPI.Models.Candidate;
-using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models.Responses;
-using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Internal;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text.Encodings.Web;
+using FootballPools.Data;
+using FootballPools.Models.ExceptionHandlers;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
-using FootballPools.Data;
+using System.Security.Claims;
+using FootballPools.Models.Candidate;
+using FootballPools.Data.Context;
 
-namespace RecruitmentSolutionsAPI.Controllers
+namespace FootballPools.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -29,18 +22,21 @@ namespace RecruitmentSolutionsAPI.Controllers
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<Register> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
 
         public IdentityController(
              UserManager<User> userManager,
              IUserStore<User> userStore,
              SignInManager<User> signInManager,
-             ILogger<Register> logger)
+             ILogger<Register> logger,
+             IEmailSender emailSender)
         {
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
             _signInManager = signInManager;
             _logger = logger;
+            _emailSender = emailSender;
         }
 
         private IUserEmailStore<User> GetEmailStore()
@@ -60,8 +56,8 @@ namespace RecruitmentSolutionsAPI.Controllers
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(FootballPools.Data.User)}'. " +
-                    $"Ensure that '{nameof(FootballPools.Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Data.User)}'. " +
+                    $"Ensure that '{nameof(Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
@@ -74,12 +70,16 @@ namespace RecruitmentSolutionsAPI.Controllers
             var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                var user = await _userManager.FindByNameAsync(request.UserName);
+
+                var claims = await GetValidClaims(user);
+
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("JWTAuthentication@777"));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(
                     issuer: "http://localhost:7200",
                     audience: "http://localhost:7200",
-                    //claims: new List<Claim>(),
+                    claims: claims,
                     expires: DateTime.Now.AddMinutes(6),
                     signingCredentials: signinCredentials
                 );
@@ -99,6 +99,33 @@ namespace RecruitmentSolutionsAPI.Controllers
 
             // If we got this far, something failed, redisplay form
             return new JWTTokenResponse();
+        }
+
+        private async Task<List<Claim>> GetValidClaims(User user)
+        {
+            IdentityOptions _options = new IdentityOptions();
+            var claims = new List<Claim>
+        {
+            //new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+            new Claim(_options.ClaimsIdentity.UserIdClaimType, user.Id)
+        };
+            var userClaims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(userClaims);
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+                var role = await _userManager.FindByNameAsync(userRole);
+                if (role != null)
+                {
+                    var roleClaims = await _userManager.GetClaimsAsync(role);
+                    foreach (Claim roleClaim in roleClaims)
+                    {
+                        claims.Add(roleClaim);
+                    }
+                }
+            }
+            return claims;
         }
 
         public class JWTTokenResponse

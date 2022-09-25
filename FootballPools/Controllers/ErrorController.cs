@@ -1,10 +1,10 @@
 ﻿using System.Text.Json;
+using FootballPools.Models.ExceptionHandlers;
+using FootballPools.Models.Responses;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using RecruitmentSolutionsAPI.Models.ExceptionHandlers;
-using RecruitmentSolutionsAPI.Models.Responses;
 
-namespace RecruitmentSolutionsAPI.Controllers;
+namespace FootballPools.Controllers;
 
 [ApiController]
 public class ErrorController : ControllerBase
