@@ -1,4 +1,6 @@
 using System.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,20 +24,9 @@ namespace RecruitmentSolutionsAPI.Controllers
             this._context = context;
         }
 
-        [HttpPost]
-        public CandidateResponse Post(CompanyRequest request)
-        {
-            var company = new Company
-            {
-                Name = request.Name
-            };
-            _context.Companies.Add(company);
-            _context.SaveChanges();
-            return new CandidateResponse();
-        }
-
         [HttpGet]
         [Route("/companies")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public IEnumerable<CompanyResponse> Get()
         {
             var companies = _context.Companies.ToList();

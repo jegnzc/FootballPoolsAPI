@@ -1,6 +1,13 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using RecruitmentSolutionsAPI.Data.Context;
+using Microsoft.AspNetCore.Identity;
+using RecruitmentSolutionsAPI.Data;
+using RecruitmentSolutionsAPI.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +16,64 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
                        ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddDbContext<IdentityDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+var config = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//})
+//    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+//    {
+//        options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
+
+//        //add this to configure Secure
+
+//        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//        options.Cookie.SameSite = SameSiteMode.None; //TODO is this important?
+//        options.Cookie.HttpOnly = true;
+//        options.ExpireTimeSpan = TimeSpan.FromDays(1);
+//        options.SlidingExpiration = true;
+
+//        options.LoginPath = "/identity/login";
+//        options.LogoutPath = "/identity/logout";
+//        options.AccessDeniedPath = new PathString("/identity/denied");
+//    });
+
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            RequireExpirationTime = true,
+            ClockSkew = TimeSpan.Zero,
+            ValidIssuer = config["JWT:ValidIssuer"],
+            ValidAudience = config["JWT:ValidAudience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]))
+        };
+
+    });
+
+builder.Services.AddIdentity<User, IdentityRole>()
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<IdentityDbContext>();
+
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -32,6 +97,9 @@ else
 {
     app.UseExceptionHandler("/error");
 }
+//app.UseCookiePolicy();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

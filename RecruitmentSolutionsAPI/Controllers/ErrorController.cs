@@ -24,14 +24,14 @@ public class ErrorController : ControllerBase
             HttpContext.Features.Get<IExceptionHandlerFeature>();
 
         // entonces nosotros fuimos los que generamos el error...
-        if (exceptionHandlerFeature?.Error is HttpResponseException expectedException)
+        if (exceptionHandlerFeature?.Error is HttpResponseException handledException)
         {
             apiBaseResponse = new ApiErrorResponse
-            (expectedException.StatusCode, expectedException.StackTrace, expectedException.GetType().ToString(),
-                expectedException.TargetSite?.ToString(), expectedException.Request,
-                expectedException.PublicMessage, expectedException.InternalCode, expectedException.Message);
+            (handledException.StatusCode, handledException.StackTrace, handledException.GetType().ToString(),
+                handledException.TargetSite?.ToString(), handledException.Request,
+                handledException.PublicMessage, handledException.InternalCode, handledException.Message);
 
-            statusCode = expectedException.StatusCode;
+            statusCode = handledException.StatusCode;
         }
         // error inesperado...
         else

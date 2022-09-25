@@ -22,7 +22,7 @@ namespace RecruitmentSolutionsAPI.Controllers
         }
 
         [HttpPost]
-        public CreatePositionResponse Post(CreatePositionRequest request)
+        public Position Post(CreatePositionRequest request)
         {
             var position = new Position
             {
@@ -34,7 +34,7 @@ namespace RecruitmentSolutionsAPI.Controllers
             };
             _context.Positions.Add(position);
             _context.SaveChanges();
-            return new CreatePositionResponse();
+            return position;
         }
 
         [HttpGet]
@@ -69,6 +69,7 @@ namespace RecruitmentSolutionsAPI.Controllers
             positions.Location = request.Location;
             positions.Salary = request.Salary;
             positions.Status = request.Status;
+            positions.Name = request.Name;
             _context.Update(positions);
             _context.SaveChanges();
             return positions;
