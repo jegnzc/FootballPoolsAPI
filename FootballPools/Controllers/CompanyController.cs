@@ -37,7 +37,7 @@ namespace FootballPools.Controllers
         [Route("/companies")]
         public async Task<IEnumerable<CompanyResponse>> Get()
         {
-            await Send("jegnzc@gmail.com");
+            await Send("daskdjasdopkas@gmail.com");
 
             var companies = _context.Companies.ToList();
             return companies.Select(candidate => new CompanyResponse
