@@ -14,13 +14,13 @@ namespace FootballPools.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    public class MatchController : ControllerBase
+    public class GroupController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public MatchController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public GroupController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
@@ -46,16 +46,6 @@ namespace FootballPools.Controllers
             await _context.AddAsync(newMatch);
             await _context.SaveChangesAsync();
             return newMatch;
-        }
-
-        [HttpPatch]
-        public async Task<Match> Post(UpdateMatch request)
-        {
-            var match = _context.Matchs.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(match);
-            _context.Update(match);
-            await _context.SaveChangesAsync();
-            return match;
         }
     }
 }

@@ -14,13 +14,13 @@ namespace FootballPools.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    public class MatchController : ControllerBase
+    public class TournamentController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public MatchController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public TournamentController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
@@ -28,34 +28,34 @@ namespace FootballPools.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Match>> Get()
+        public async Task<List<Tournament>> Get()
         {
-            return await _context.Matchs.ToListAsync();
+            return await _context.Tournaments.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<Match> Get(int id)
+        public async Task<Tournament> Get(int id)
         {
-            return await _context.Matchs.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Tournaments.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         [HttpPost]
-        public async Task<Match> Post(CreateMatch request)
+        public async Task<Tournament> Post(CreateTournament request)
         {
-            var newMatch = request.Adapt<Match>();
-            await _context.AddAsync(newMatch);
+            var newTournament = request.Adapt<Tournament>();
+            await _context.AddAsync(newTournament);
             await _context.SaveChangesAsync();
-            return newMatch;
+            return newTournament;
         }
 
         [HttpPatch]
-        public async Task<Match> Post(UpdateMatch request)
+        public async Task<Tournament> Post(UpdateTournament request)
         {
-            var match = _context.Matchs.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(match);
-            _context.Update(match);
+            var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == request.Id);
+            request.Adapt(tournament);
+            _context.Update(tournament);
             await _context.SaveChangesAsync();
-            return match;
+            return tournament;
         }
     }
 }
