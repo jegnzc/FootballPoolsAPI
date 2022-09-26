@@ -39,7 +39,6 @@ public class CreateMatch
     public string Name { get; set; }
     public int? FirstParticipantId { get; set; }
     public int? SecondParticipantId { get; set; }
-    public int? WinnerId { get; set; }
     public DateTime Schedule { get; set; }
     public int StadiumId { get; set; }
 }
@@ -78,12 +77,30 @@ public class CreateTournamentResponse
 {
 }
 
+public class CreateStadium
+{
+    public string Name { get; set; }
+}
+
+public class CreateStadiumResponse
+{
+}
+
+public class UpdateStadium
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+public class UpdateStadiumResponse
+{
+}
+
 public class CreatePrediction
 {
     public int FirstParticipantScore { get; set; }
     public int SecondParticipantScore { get; set; }
     public int MatchId { get; set; }
-    public int LeagueMemberId { get; set; }
 }
 
 public class CreatePredictionResponse

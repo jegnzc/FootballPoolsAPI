@@ -29,34 +29,34 @@ namespace FootballPools.Controllers
         }
 
         [HttpGet]
-        public async Task<List<LeagueMemberPrediction>> Get()
+        public async Task<List<Participant>> Get()
         {
-            return await _context.LeagueMemberPredictions.ToListAsync();
+            return await _context.Participants.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<LeagueMemberPrediction> Get(int id)
+        public async Task<Participant> Get(int id)
         {
-            return await _context.LeagueMemberPredictions.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Participants.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         [HttpPost]
-        public async Task<LeagueMemberPrediction> Post(CreatePrediction request)
+        public async Task<Participant> Post(CreateTournamentParticipant request)
         {
-            var newPrediction = request.Adapt<LeagueMemberPrediction>();
-            await _context.AddAsync(newPrediction);
+            var newParticipant = request.Adapt<Participant>();
+            await _context.AddAsync(newParticipant);
             await _context.SaveChangesAsync();
-            return newPrediction;
+            return newParticipant;
         }
 
         [HttpPatch]
-        public async Task<LeagueMemberPrediction> Post(UpdatePrediction request)
+        public async Task<Participant> Post(UpdateTournamentParticipant request)
         {
-            var prediction = _context.LeagueMemberPredictions.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(prediction);
-            _context.Update(prediction);
+            var participant = _context.Participants.SingleOrDefault(x => x.Id == request.Id);
+            request.Adapt(participant);
+            _context.Update(participant);
             await _context.SaveChangesAsync();
-            return prediction;
+            return participant;
         }
     }
 }

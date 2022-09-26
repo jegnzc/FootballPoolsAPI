@@ -1,5 +1,6 @@
 using FootballPools.Data.Context;
 using FootballPools.Data.Identity;
+using FootballPools.Data.Leagues;
 using FootballPools.Data.WorldCup;
 using FootballPools.Models.WorldCup;
 using Mapster;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace FootballPools.Controllers
 {
@@ -28,34 +30,36 @@ namespace FootballPools.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Tournament>> Get()
+        public async Task<List<LeagueMemberPrediction>> Get()
         {
-            return await _context.Tournaments.ToListAsync();
+            return await _context.LeagueMemberPredictions.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<Tournament> Get(int id)
+        public async Task<LeagueMemberPrediction> Get(int id)
         {
-            return await _context.Tournaments.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.LeagueMemberPredictions.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         [HttpPost]
-        public async Task<Tournament> Post(CreateTournament request)
+        public async Task<LeagueMemberPrediction> Post(CreatePrediction request)
         {
-            var newTournament = request.Adapt<Tournament>();
-            await _context.AddAsync(newTournament);
+            var member = await _context.LeagueMembers.SingleOrDefaultAsync(x => x.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var prediction = request.Adapt<LeagueMemberPrediction>();
+            prediction.LeagueMemberId = member.Id;
+            await _context.AddAsync(prediction);
             await _context.SaveChangesAsync();
-            return newTournament;
+            return prediction;
         }
 
         [HttpPatch]
-        public async Task<Tournament> Post(UpdateTournament request)
+        public async Task<LeagueMemberPrediction> Post(UpdatePrediction request)
         {
-            var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(tournament);
-            _context.Update(tournament);
+            var prediction = _context.LeagueMemberPredictions.SingleOrDefault(x => x.Id == request.Id);
+            request.Adapt(prediction);
+            _context.Update(prediction);
             await _context.SaveChangesAsync();
-            return tournament;
+            return prediction;
         }
     }
 }

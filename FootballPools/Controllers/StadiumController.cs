@@ -28,34 +28,34 @@ namespace FootballPools.Controllers
         }
 
         [HttpGet]
-        public async Task<List<Tournament>> Get()
+        public async Task<List<Stadium>> Get()
         {
-            return await _context.Tournaments.ToListAsync();
+            return await _context.Stadiums.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<Tournament> Get(int id)
+        public async Task<Stadium> Get(int id)
         {
-            return await _context.Tournaments.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Stadiums.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         [HttpPost]
-        public async Task<Tournament> Post(CreateTournament request)
+        public async Task<Stadium> Post(CreateStadium request)
         {
-            var newTournament = request.Adapt<Tournament>();
-            await _context.AddAsync(newTournament);
+            var newStadium = request.Adapt<Stadium>();
+            await _context.AddAsync(newStadium);
             await _context.SaveChangesAsync();
-            return newTournament;
+            return newStadium;
         }
 
         [HttpPatch]
-        public async Task<Tournament> Post(UpdateTournament request)
+        public async Task<Stadium> Post(UpdateStadium request)
         {
-            var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(tournament);
-            _context.Update(tournament);
+            var stadium = _context.Stadiums.SingleOrDefault(x => x.Id == request.Id);
+            request.Adapt(stadium);
+            _context.Update(stadium);
             await _context.SaveChangesAsync();
-            return tournament;
+            return stadium;
         }
     }
 }

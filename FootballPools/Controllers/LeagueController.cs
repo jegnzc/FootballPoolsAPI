@@ -28,8 +28,8 @@ namespace FootballPools.Controllers
             _emailSender = emailSender;
         }
 
-        [HttpPost("members")]
-        public async Task<GetMembersByLeagueIdResponse> Post(GetMembersByLeagueId request)
+        [HttpGet("members")]
+        public async Task<GetMembersByLeagueIdResponse> Post()
         {
             return new GetMembersByLeagueIdResponse()
             {
@@ -68,8 +68,7 @@ namespace FootballPools.Controllers
             };
         }
 
-        [HttpPost]
-        [HttpGet("join")]
+        [HttpPost("join")]
         public async Task<JoinResponse> Post(Join request)
         {
             var league = await _context.Leagues.SingleOrDefaultAsync(x => x.Id == request.Id);
@@ -92,6 +91,7 @@ namespace FootballPools.Controllers
             {
                 Name = request.Name,
                 UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                LeagueTypeId = request.LeagueTypeId,
             });
             await _context.SaveChangesAsync();
             return Ok();
@@ -116,7 +116,7 @@ namespace FootballPools.Controllers
 
             var user = await _userManager.FindByIdAsync(request.UserId);
             var subject = "Invitación a liga";
-            var body = "https://localhost:7200/company/acceptLeagueInvitation/" + leagueInvitation.Token;
+            var body = "https://localhost:7200/league/accept/" + leagueInvitation.Token;
 
             await _emailSender.SendEmailAsync(user.Email, subject, body);
 

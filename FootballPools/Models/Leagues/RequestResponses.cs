@@ -15,6 +15,7 @@ public class CreateLeagueInvitationResponse
 public class CreateLeague
 {
     public string Name { get; set; }
+    public int LeagueTypeId { get; set; }
 }
 
 public class CreateLeagueResponse
