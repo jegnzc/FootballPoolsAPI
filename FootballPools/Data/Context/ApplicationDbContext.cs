@@ -1,5 +1,5 @@
 ﻿using FootballPools.Data.Leagues;
-using FootballPools.Data.Mundial;
+using FootballPools.Data.WorldCup;
 using Microsoft.EntityFrameworkCore;
 
 namespace FootballPools.Data.Context;
@@ -19,6 +19,7 @@ public class ApplicationDbContext : DbContext
 
     //
     public DbSet<Group> Groups { get; set; }
+
     public DbSet<Match> Matchs { get; set; }
     public DbSet<Participant> Participants { get; set; }
     public DbSet<Stadium> Stadiums { get; set; }

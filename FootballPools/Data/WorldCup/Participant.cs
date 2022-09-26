@@ -1,6 +1,6 @@
-﻿namespace FootballPools.Data.Mundial;
+﻿namespace FootballPools.Data.WorldCup;
 
-public class Group
+public class Participant
 {
     public int Id { get; set; }
     public string Name { get; set; }

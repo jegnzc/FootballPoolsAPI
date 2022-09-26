@@ -1,4 +1,4 @@
-﻿namespace FootballPools.Data.Mundial;
+﻿namespace FootballPools.Data.WorldCup;
 
 public class Match
 {

@@ -1,4 +1,4 @@
-﻿using FootballPools.Data.Mundial;
+﻿using FootballPools.Data.WorldCup;
 
 namespace FootballPools.Data.Leagues;
 
