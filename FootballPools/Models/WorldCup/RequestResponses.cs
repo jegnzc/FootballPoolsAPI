@@ -3,12 +3,24 @@ using FootballPools.Data.WorldCup;
 
 namespace FootballPools.Models.WorldCup;
 
-public class CreateTournament
+public class CreateTournamentParticipant
 {
     public string Name { get; set; }
+    public int TournamentId { get; set; }
 }
 
-public class CreateTournamentReponse
+public class CreateTournamentParticipantResponse
+{
+}
+
+public class UpdateTournamentParticipant
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int TournamentId { get; set; }
+}
+
+public class UpdateTournamentParticipantResponse
 {
 }
 
