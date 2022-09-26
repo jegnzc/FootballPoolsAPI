@@ -1,5 +1,7 @@
-﻿using FootballPools.Data;
+﻿using FootballPools.Data.Identity;
+using FootballPools.Data.Leagues;
 using FootballPools.Models.Responses;
+using Microsoft.AspNetCore.Components;
 
 namespace FootballPools.Models.Candidate;
 
@@ -45,4 +47,53 @@ public class CreateLeague
 
 public class CreateLeagueResponse
 {
+}
+
+public class GetLeagues
+{
+}
+
+public class GetLeaguesResponse
+{
+    public List<League> Leagues { get; set; }
+}
+
+public class GetLeagueById
+{
+    public int Id { get; set; }
+}
+
+public class GetLeagueByIdResponse
+{
+    public League League { get; set; }
+}
+
+public class Join
+{
+    public int Id { get; set; }
+}
+
+public class JoinResponse
+{
+    public League League { get; set; }
+}
+
+public class GetMembersByLeagueId
+{
+    public int Id { get; set; }
+}
+
+public class GetMembersByLeagueIdResponse
+{
+    public List<LeagueMember> Members { get; set; }
+}
+
+public class AcceptMember
+{
+    public string Id { get; set; }
+}
+
+public class AcceptMemberResponse
+{
+    public LeagueMember Member { get; set; }
 }

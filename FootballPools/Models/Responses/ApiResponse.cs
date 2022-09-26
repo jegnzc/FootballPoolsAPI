@@ -12,6 +12,12 @@ public class ApiResponse
         Message = message ?? GetDefaultMessageForStatusCode(statusCode);
     }
 
+    public ApiResponse(string? message = null)
+    {
+        StatusCode = 200;
+        Message = message ?? GetDefaultMessageForStatusCode(StatusCode);
+    }
+
     private static string? GetDefaultMessageForStatusCode(int statusCode)
     {
         switch (statusCode)

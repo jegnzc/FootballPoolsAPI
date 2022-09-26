@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using FootballPools.Data;
 using FootballPools.Models.ExceptionHandlers;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using FootballPools.Models.Candidate;
 using FootballPools.Data.Context;
+using FootballPools.Data.Identity;
 
 namespace FootballPools.Controllers
 {
@@ -56,8 +56,8 @@ namespace FootballPools.Controllers
             }
             catch
             {
-                throw new InvalidOperationException($"Can't create an instance of '{nameof(Data.User)}'. " +
-                    $"Ensure that '{nameof(Data.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(Data.Identity.User)}'. " +
+                    $"Ensure that '{nameof(Data.Identity.User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
@@ -80,7 +80,7 @@ namespace FootballPools.Controllers
                     issuer: "http://localhost:7200",
                     audience: "http://localhost:7200",
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(6),
+                    expires: DateTime.Now.AddDays(6),
                     signingCredentials: signinCredentials
                 );
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
