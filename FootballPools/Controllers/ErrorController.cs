@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using FootballPools.Models.ExceptionHandlers;
+﻿using FootballPools.Models.ExceptionHandlers;
 using FootballPools.Models.Responses;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;

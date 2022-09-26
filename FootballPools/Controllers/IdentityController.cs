@@ -6,9 +6,9 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
-using FootballPools.Models.Candidate;
 using FootballPools.Data.Context;
 using FootballPools.Data.Identity;
+using FootballPools.Models.Identity;
 
 namespace FootballPools.Controllers
 {
