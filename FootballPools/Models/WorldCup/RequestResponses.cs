@@ -77,3 +77,28 @@ public class CreateTournament
 public class CreateTournamentResponse
 {
 }
+
+public class CreatePrediction
+{
+    public int FirstParticipantScore { get; set; }
+    public int SecondParticipantScore { get; set; }
+    public int MatchId { get; set; }
+    public int LeagueMemberId { get; set; }
+}
+
+public class CreatePredictionResponse
+{
+}
+
+public class UpdatePrediction
+{
+    public int Id { get; set; }
+    public int FirstParticipantScore { get; set; }
+    public int SecondParticipantScore { get; set; }
+    public int MatchId { get; set; }
+    public int LeagueMemberId { get; set; }
+}
+
+public class UpdatePredictionResponse
+{
+}

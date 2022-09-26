@@ -1,6 +1,5 @@
 using FootballPools.Data.Context;
 using FootballPools.Data.Identity;
-using FootballPools.Data.Leagues;
 using FootballPools.Data.WorldCup;
 using FootballPools.Models.WorldCup;
 using Mapster;
@@ -15,13 +14,13 @@ namespace FootballPools.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    public class TournamentParticipantController : ControllerBase
+    public class PredictionController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public TournamentParticipantController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public PredictionController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
@@ -29,34 +28,34 @@ namespace FootballPools.Controllers
         }
 
         [HttpGet]
-        public async Task<List<LeagueMemberPrediction>> Get()
+        public async Task<List<Tournament>> Get()
         {
-            return await _context.LeagueMemberPredictions.ToListAsync();
+            return await _context.Tournaments.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<LeagueMemberPrediction> Get(int id)
+        public async Task<Tournament> Get(int id)
         {
-            return await _context.LeagueMemberPredictions.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Tournaments.SingleOrDefaultAsync(x => x.Id == id);
         }
 
         [HttpPost]
-        public async Task<LeagueMemberPrediction> Post(CreatePrediction request)
+        public async Task<Tournament> Post(CreateTournament request)
         {
-            var newPrediction = request.Adapt<LeagueMemberPrediction>();
-            await _context.AddAsync(newPrediction);
+            var newTournament = request.Adapt<Tournament>();
+            await _context.AddAsync(newTournament);
             await _context.SaveChangesAsync();
-            return newPrediction;
+            return newTournament;
         }
 
         [HttpPatch]
-        public async Task<LeagueMemberPrediction> Post(UpdatePrediction request)
+        public async Task<Tournament> Post(UpdateTournament request)
         {
-            var prediction = _context.LeagueMemberPredictions.SingleOrDefault(x => x.Id == request.Id);
-            request.Adapt(prediction);
-            _context.Update(prediction);
+            var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == request.Id);
+            request.Adapt(tournament);
+            _context.Update(tournament);
             await _context.SaveChangesAsync();
-            return prediction;
+            return tournament;
         }
     }
 }
