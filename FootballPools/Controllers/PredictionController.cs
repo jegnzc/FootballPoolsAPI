@@ -1,7 +1,6 @@
 using FootballPools.Data.Context;
 using FootballPools.Data.Identity;
 using FootballPools.Data.Leagues;
-using FootballPools.Data.WorldCup;
 using FootballPools.Models.WorldCup;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;

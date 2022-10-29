@@ -142,8 +142,6 @@ else
 {
     app.UseExceptionHandler("/error");
 }
-//app.UseCookiePolicy();
-
 app.UseAuthentication();
 
 app.UseAuthorization();
