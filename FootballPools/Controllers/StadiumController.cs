@@ -1,4 +1,4 @@
-using FootballPools.Data.Context;
+using FootballPools.Data;
 using FootballPools.Data.Identity;
 using FootballPools.Data.WorldCup;
 using FootballPools.Models.WorldCup;
@@ -16,11 +16,11 @@ namespace FootballPools.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class StadiumController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public StadiumController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public StadiumController(IApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
@@ -43,7 +43,7 @@ namespace FootballPools.Controllers
         public async Task<Stadium> Post(CreateStadium request)
         {
             var newStadium = request.Adapt<Stadium>();
-            await _context.AddAsync(newStadium);
+            await _context.Stadiums.AddAsync(newStadium);
             await _context.SaveChangesAsync();
             return newStadium;
         }
@@ -53,7 +53,7 @@ namespace FootballPools.Controllers
         {
             var stadium = _context.Stadiums.SingleOrDefault(x => x.Id == request.Id);
             request.Adapt(stadium);
-            _context.Update(stadium);
+            _context.Stadiums.Update(stadium);
             await _context.SaveChangesAsync();
             return stadium;
         }

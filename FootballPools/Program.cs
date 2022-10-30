@@ -1,18 +1,15 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FootballPools.Data.Context;
-using System.Reflection;
-using System.Security.Principal;
 using FootballPools.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.OpenApi.Models;
 using FootballPools.Data.Identity;
+using FootballPools.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,6 +125,8 @@ builder.Services.AddSwaggerGen(option =>
  });
 }
 );
+builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+
 var app = builder.Build();
 app.UseHttpsRedirection();
 

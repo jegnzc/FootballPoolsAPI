@@ -2,15 +2,10 @@
 using FootballPools.Data.WorldCup;
 using Microsoft.EntityFrameworkCore;
 
-namespace FootballPools.Data.Context;
+namespace FootballPools.Data;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public interface IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<League> Leagues { get; set; }
     public DbSet<LeagueInvitation> LeagueInvitations { get; set; }
     public DbSet<LeagueMember> LeagueMembers { get; set; }
@@ -21,4 +16,6 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Participant> Participants { get; set; }
     public DbSet<Stadium> Stadiums { get; set; }
     public DbSet<Tournament> Tournaments { get; set; }
+
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

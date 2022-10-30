@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using FootballPools.Data.Context;
+using FootballPools.Data;
 using FootballPools.Data.Identity;
 using FootballPools.Data.Leagues;
 using FootballPools.Models.ExceptionHandlers;
@@ -17,11 +17,11 @@ namespace FootballPools.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class LeagueController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public LeagueController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public LeagueController(IApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
@@ -42,7 +42,7 @@ namespace FootballPools.Controllers
         {
             var member = await _context.LeagueMembers.SingleOrDefaultAsync(x => x.UserId == request.Id);
             member.Authorized = true;
-            _context.Update(member);
+            _context.LeagueMembers.Update(member);
             _context.SaveChangesAsync();
             return new AcceptMemberResponse()
             {
@@ -72,7 +72,7 @@ namespace FootballPools.Controllers
         public async Task<JoinResponse> Post(Join request)
         {
             var league = await _context.Leagues.SingleOrDefaultAsync(x => x.Id == request.Id);
-            _context.LeagueMembers.AddAsync(new LeagueMember()
+            await _context.LeagueMembers.AddAsync(new LeagueMember()
             {
                 LeagueId = request.Id,
                 UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),

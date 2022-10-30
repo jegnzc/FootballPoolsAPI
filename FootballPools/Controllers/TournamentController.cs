@@ -1,3 +1,4 @@
+using FootballPools.Data;
 using FootballPools.Data.Context;
 using FootballPools.Data.Identity;
 using FootballPools.Data.WorldCup;
@@ -16,46 +17,57 @@ namespace FootballPools.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class TournamentController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         public IEmailSender _emailSender { get; set; }
         private readonly UserManager<User> _userManager;
 
-        public TournamentController(ApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
+        public TournamentController(IApplicationDbContext context, IEmailSender emailSender, UserManager<User> userManager)
         {
             _userManager = userManager;
             _context = context;
             _emailSender = emailSender;
         }
 
-        [HttpGet]
-        public async Task<List<Tournament>> Get()
+        public TournamentController(IApplicationDbContext context)
         {
-            return await _context.Tournaments.ToListAsync();
+            _context = context;
+        }
+
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(_context.Tournaments.ToList());
         }
 
         [HttpGet("{id}")]
-        public async Task<Tournament> Get(int id)
+        public IActionResult Get(int id)
         {
-            return await _context.Tournaments.SingleOrDefaultAsync(x => x.Id == id);
+            var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == id);
+            if (tournament == null)
+                return NotFound();
+            return Ok();
         }
 
         [HttpPost]
-        public async Task<Tournament> Post(CreateTournament request)
+        public IActionResult Post(CreateTournament request)
         {
+            if (request.Name == null)
+                return BadRequest();
             var newTournament = request.Adapt<Tournament>();
-            await _context.AddAsync(newTournament);
-            await _context.SaveChangesAsync();
-            return newTournament;
+            _context.Tournaments.Add(newTournament);
+            _context.SaveChangesAsync();
+            return Ok(newTournament);
         }
 
         [HttpPatch]
-        public async Task<Tournament> Post(UpdateTournament request)
+        public IActionResult Patch(UpdateTournament request)
         {
             var tournament = _context.Tournaments.SingleOrDefault(x => x.Id == request.Id);
             request.Adapt(tournament);
-            _context.Update(tournament);
-            await _context.SaveChangesAsync();
-            return tournament;
+            _context.Tournaments.Update(tournament);
+            _context.SaveChangesAsync();
+            return Ok(tournament);
         }
     }
 }
