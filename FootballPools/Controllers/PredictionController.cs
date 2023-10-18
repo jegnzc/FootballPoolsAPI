@@ -45,7 +45,7 @@ namespace FootballPools.Controllers
         {
             var member = await _context.LeagueMembers.SingleOrDefaultAsync(x => x.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier));
             var prediction = request.Adapt<LeagueMemberPrediction>();
-            prediction.LeagueMemberId = member.Id;
+            prediction.LeagueMemberId = member?.Id ?? 0;
             await _context.AddAsync(prediction);
             await _context.SaveChangesAsync();
             return prediction;

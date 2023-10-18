@@ -27,29 +27,6 @@ var config = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json")
                     .Build();
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//})
-//    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-//    {
-//        options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-
-//        //add this to configure Secure
-
-//        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-//        options.Cookie.SameSite = SameSiteMode.None; //TODO is this important?
-//        options.Cookie.HttpOnly = true;
-//        options.ExpireTimeSpan = TimeSpan.FromDays(1);
-//        options.SlidingExpiration = true;
-
-//        options.LoginPath = "/identity/login";
-//        options.LogoutPath = "/identity/logout";
-//        options.AccessDeniedPath = new PathString("/identity/denied");
-//    });
-
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -78,13 +55,13 @@ builder.Services.AddIdentity<User, IdentityRole>()
 builder.Services.AddTransient<IEmailSender, MailKitEmailSender>();
 builder.Services.Configure<MailKitEmailSenderOptions>(options =>
 {
-    options.Host_Address = "smtp.gmail.com";
-    options.Host_Port = 587;
+    options.Host_Address = config["Email:Host_Address"];
+    options.Host_Port = int.Parse(config["Email:Host_Port"]);
     options.Host_SecureSocketOptions = MailKit.Security.SecureSocketOptions.StartTls;
-    options.Host_Username = "jegnzc@gmail.com";
-    options.Host_Password = "wynsttrbcdpoaixh";
-    options.Sender_Email = "jegnzc@gmail.com";
-    options.Sender_Name = "jegnzc";
+    options.Host_Username = config["Email:Host_Username"];
+    options.Host_Password = config["Email:Host_Password"];
+    options.Sender_Email = config["Email:Sender_Email"];
+    options.Sender_Name = config["Email:Sender_Name"];
 });
 
 //builder.Services.AddHttpContextAccessor();
